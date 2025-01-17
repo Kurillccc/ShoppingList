@@ -31,7 +31,7 @@ struct ContentView: View {
                             .background(Circle().fill(Color.black)
                                 .font(.caption))
                             .foregroundColor(.white)
-                            .shadow(radius: 5)
+                            .shadow(radius: 10)
                     }
                     .padding()
                     
@@ -59,11 +59,10 @@ struct ContentView: View {
             }
             
             if isAdding {
-                VStack(spacing: 20) {
-                    Text("Введите новый элемент")
-                        .font(.headline)
+                VStack(spacing: 0.5) {
+                    Spacer()
                     
-                    TextField("Название элемента", text: $newItem)
+                    TextField("New item", text: $newItem)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
                     
@@ -78,6 +77,7 @@ struct ContentView: View {
                             }
                         }
                         .padding()
+                        .foregroundColor(.black)
                         
                         Button("Отмена") {
                             withAnimation {
@@ -86,13 +86,15 @@ struct ContentView: View {
                             }
                         }
                         .padding()
+                        .foregroundColor(.black)
                     }
+                    
+                    Spacer()
                 }
-                .frame(width: 300, height: 200)
+                .frame(width: 300, height: 130)
                 .background(Color.white)
-                .cornerRadius(10)
+                .cornerRadius(15)
                 .shadow(radius: 10)
-                .padding()
             }
         }
     }
