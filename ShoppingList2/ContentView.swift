@@ -12,6 +12,10 @@ struct ContentView: View {
     @State private var newItem: String = ""
     @State private var isAdding: Bool = false
     @State private var checkedItems: Set<String> = [] // Множество для отслеживания отмеченных элементов
+    @State private var selectedItem: String? = nil   // Для отслеживания элемента, который редактируется
+    @State private var showOptions: Bool = false
+    @State private var newText: String = ""         // Новый текст для редактирования
+        
     
     var body: some View {
         ZStack {
@@ -45,12 +49,22 @@ struct ContentView: View {
                                 toggleCheckedItem(item)
                             }) {
                                 Image(systemName: checkedItems.contains(item) ? "checkmark.square.fill" : "square")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.black)
                             }
                             
                             
                             Text(item)
+                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                                .background(Color.clear)
+                                .cornerRadius(8)
+                                .contentShape(Rectangle())
                                 .strikethrough(checkedItems.contains(item), color: .black)
+                                .onLongPressGesture {
+                                    selectedItem = item
+                                    newText = item
+                                    showOptions = true
+                                }
+
                         }
                         .transition(.move(edge: .top))
                     }
@@ -63,7 +77,7 @@ struct ContentView: View {
                     Spacer()
                     
                     TextField("New item", text: $newItem)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .textFieldStyle(PlainTextFieldStyle())
                         .padding()
                     
                     HStack {
@@ -96,9 +110,54 @@ struct ContentView: View {
                 .cornerRadius(15)
                 .shadow(radius: 10)
             }
+            
+            if showOptions, let selectedItem = selectedItem {
+                VStack(spacing: 20) {
+                    TextField("Изменить текст", text: $newText)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding()
+                    
+                    HStack {
+                        Button("Изменить") {
+                            withAnimation {
+                                if let index = items.firstIndex(of: selectedItem) {
+                                    items[index] = newText
+                                    resetOptions()
+                                }
+                            }
+                        }
+                        .padding()
+                        
+                        Button("Удалить") {
+                            withAnimation {
+                                items.removeAll { $0 == selectedItem }
+                                resetOptions()
+                            }
+                        }
+                        .padding()
+                        
+                        Button("Отмена") {
+                            resetOptions()
+                        }
+                        .padding()
+                    }
+                }
+                .frame(width: 300, height: 200)
+                .background(Color.white)
+                .cornerRadius(10)
+                .shadow(radius: 10)
+                .padding()
+            }
         }
     }
-    
+        
+    // Сброс состояния панели
+    func resetOptions() {
+        showOptions = false
+        selectedItem = nil
+        newText = ""
+    }
+        
     // Функция для изменения состояния элемента (отметить/снять отметку)
     func toggleCheckedItem(_ item: String) {
         if checkedItems.contains(item) {
@@ -111,6 +170,7 @@ struct ContentView: View {
             items = items.filter { $0 != item } + [item]
         }
     }
+    
 }
 
 
